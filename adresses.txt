@@ -1,0 +1,28 @@
+=========
+[0x401745]  [Program code]
+[0x498008]  [const]
+[0x4c50f0]  [Initialized global variable]
+[0x4c72f0]  [Uninitialized global variable]
+---------
+[0x7ffff7bf8010] [Heap]
+---------
+Ikke brukt
+---------
+[0x7fffffffd69c] [Stack]
+[0x7fffffffd6bc] [Stack]
+[0x7fffffffd6dc] [Stack]
+=========
+
+Forskjellige komponenter av et program plasseres på ulike steder i minnet for å sikre effektiv ressursbruk og sikkerhet:
+
+1. Programkode: Lagres i et skrivebeskyttet område for å forhindre utilsiktede endringer i instruksjonene.
+
+2. Konstanter (const): Plasseres i et skrivebeskyttet segment for å beskytte verdier som ikke skal endres.
+
+3. Initialiserte globale variabler: Lagres i et eget segment for enkel tilgang, siden verdiene allerede er definert.
+
+4. Uinitialiserte globale variabler: Plasseres i BSS-segmentet, som kun reserverer plass uten å bruke ekstra lagring før programstart.
+
+5. Heap: Dynamisk minne som kan vokse etter behov for malloc-allokeringer under programkjøring.
+
+6. Stack: Brukes til funksjonskall og lokale variabler, og vokser nedover i minnet.
