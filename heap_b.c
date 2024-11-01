@@ -5,8 +5,8 @@
 #include <stdio.h>
 
 void main() {
-    // Allocate 10 MB of memory
-    size_t size = 10 * 1024 * 1024;
+    // Allocate 4 MB of memory
+    size_t size = 4 * 1024 * 1024;
     char *heap_array = (char *)malloc(size);
    
 
