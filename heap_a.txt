@@ -2,4 +2,14 @@ I de 16 bytes før minneadressen som malloc gir oss ligger metadata.
 Her finnes informasjon om størrelsen til heapen vi har allokert plass i minnet til. 
 I heap_a.c printes de 4 verdiene som ligger som metadata som int's. 
 Den ene verdien korresponder tydelig med hvor mye plass vi har allokert til heapen.
-Derfor gjenkejenner vi denne verdien som metadata, nærmere bestemt størrelse. 
+Derfor gjenkejenner vi denne verdien som metadata, nærmere bestemt størrelse.
+
+Output fra programmet heap_a.c blir:
+
+Address of heap_array: 0x7f21b84b0010
+Metadata: 0
+Metadata: 0
+Metadata: 1052674
+Metadata: 0
+
+Vi gjenkjenner 1052674 som størrelsen på heap_array som vi reserverte plass til i minnet.
