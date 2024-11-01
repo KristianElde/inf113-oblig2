@@ -10,20 +10,19 @@ void allocateOnce() {
         heap_array = (char *)malloc(size);
 
         if (heap_array == NULL) {
-            printf("Failed to allocate %zu bytes (%.2f GB).\n", size, (double)size / (1024 * 1024 * 1024));
+            printf("Failed to allocate %.2f GB.\n", (double)size / (1024 * 1024 * 1024));
             break;
         }
 
-        printf("Successfully allocated %zu bytes (%.2f GB).\n", size, (double)size / (1024 * 1024 * 1024));
+        printf("Successfully allocated %.2f GB.\n", (double)size / (1024 * 1024 * 1024));
 
-        free(heap_array); // Free the memory to avoid system instability
-        size += 1024 * 1024 * 1024 / 10; // Increase by 100 MB in each iteration
+        free(heap_array);
+        size += 1024 * 1024 * 1024 / 10; // Increase by 0.1 GB in each iteration
     }
-    getchar();
 }
 
 void allocateMultipleTimes() {
-    size_t blockSize = 512 * 1024 * 1024; // Fixed block size of 0.5 GB
+    size_t blockSize = 1024 * 1024 * 1024; // Fixed block size of 1 GB
     size_t totalAllocated = 0;
     char *block;
     int allocationCount = 0;
@@ -38,15 +37,14 @@ void allocateMultipleTimes() {
 
         totalAllocated += blockSize;
         allocationCount++;
-        printf("Allocated %d blocks, Total allocated memory: %.2f GB\n", allocationCount, (double)totalAllocated / (1024 * 1024 * 1024));
+        printf("Allocated %d blocks, Total allocated memory: %zu GB\n", allocationCount, totalAllocated / (1024 * 1024 * 1024));
     }
 
-    printf("Maximum memory allocated with multiple blocks of %.2f GB each: %.2f GB\n", (double)blockSize / (1024 * 1024 * 1024), (double)totalAllocated / (1024 * 1024 * 1024));
-    getchar();
+    printf("Maximum memory allocated with multiple blocks of %zu GB each: %zu GB\n", blockSize / (1024 * 1024 * 1024), totalAllocated / (1024 * 1024 * 1024));
 }
 
 void allocateAndWrite() {
-    size_t blockSize = 512 * 1024 * 1024; // Fixed block size of 0.5GB
+    size_t blockSize = 1024 * 1024 * 1024; // Fixed block size of 1 GB
     size_t totalAllocated = 0;
     char *block;
     int allocationCount = 0;
@@ -55,7 +53,7 @@ void allocateAndWrite() {
         block = (char *)malloc(blockSize);
 
         if (block == NULL) {
-            printf("Failed to allocate more memory after %.2f GB.\n", (double)totalAllocated / (1024 * 1024 * 1024));
+            printf("Failed to allocate more memory after %.zu GB.\n", totalAllocated / (1024 * 1024 * 1024));
             break;
         }
 
@@ -63,17 +61,17 @@ void allocateAndWrite() {
 
         totalAllocated += blockSize;
         allocationCount++;
-        printf("Allocated and wrote to %d blocks, Total allocated memory: %.2f GB\n", allocationCount, (double)totalAllocated / (1024 * 1024 * 1024));
+        printf("Allocated and wrote to %d blocks, Total allocated memory: %zu GB\n", allocationCount, totalAllocated / (1024 * 1024 * 1024));
     }
 
-    printf("Maximum memory allocated and written with multiple blocks of %.2f GB each: %.2f GB\n", (double)blockSize / (1024 * 1024 * 1024), (double)totalAllocated / (1024 * 1024 * 1024));
-    getchar();
+    printf("Maximum memory allocated and written with multiple blocks of %zu GB each: %zu GB\n", blockSize / (1024 * 1024 * 1024), totalAllocated / (1024 * 1024 * 1024));
 }
 
 int main() {
+    
     allocateOnce();
-    allocateMultipleTimes();
-    allocateAndWrite();
+    // allocateMultipleTimes();
+    // allocateAndWrite();
 
     return 0;
 }

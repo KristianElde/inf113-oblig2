@@ -1,0 +1,86 @@
+Output fra `free -h`:
+
+               total        used        free      shared  buff/cache   available
+Mem:           3.8Gi       1.0Gi       2.1Gi        32Mi       926Mi       2.8Gi
+Swap:          3.8Gi       716Mi       3.1Gi
+
+
+For å teste hvor mye jeg kan allokere i én malloc før det går feil
+kjører jeg `allocateOnce()` funksjonen. Den allokerer en mengde
+av minne som inkrementeres med 0.1 GB for hvert forsøk. Når malloc() returnerer
+NULL, har vi prøvd å allokere mer minne enn hv som er mulig.
+Når programmet kjøres får jeg denne outputen:
+
+
+Successfully allocated 1.00 GB.
+Successfully allocated 1.10 GB.
+Successfully allocated 1.20 GB.
+Successfully allocated 1.30 GB.
+Successfully allocated 1.40 GB.
+...
+Successfully allocated 7.30 GB.
+Successfully allocated 7.40 GB.
+Successfully allocated 7.50 GB.
+Successfully allocated 7.60 GB.
+Failed to allocate 7.70 GB.
+
+Basert på denne outputen ser vi at vi maksimalt får lov til å reservere 7.6 GB.
+Når vi prøver å allokere 7.7 GB  mislykkes vi. Grunnen til at dette er grensen
+for hvor mye minne vi kan reservere i en operasjon er at operativ systemet ikke
+tillater at vi allokerer mer enn totalt fysisk minne + totalt virituelt minne.
+Dette kan vi lese ut fra tabellen øverst som er output fra å kjøre
+kommandoen: `free -h`. 
+
+Totalt fysisk minne: 3.8 GB +
+Totalt virituelt minne: 3.8 GB
+= 7.6 GB
+
+Dette stemmer godt overens med observasjonene over.
+
+
+For å teste å allokere mindre blokker av minne mange ganger, for å finne
+ut hvor mye vi får lov til å reservere kjører vi funksjonen `allocateMultipleTimes()`.
+Denne funskjonen allokerer blokker på 1 GB hver helt til `malloc()` returnerer
+NULL. Når dette skjer får vi ikke lov til å reservere mer minne. Vi kjører programmet
+for å sjekke hvor mye vi minne vi får lov til å reservere, og får følgende output:
+
+Allocated 1 blocks, Total allocated memory: 1 GB
+Allocated 2 blocks, Total allocated memory: 2 GB
+Allocated 3 blocks, Total allocated memory: 3 GB
+...
+Allocated 130932 blocks, Total allocated memory: 130932 GB
+Allocated 130933 blocks, Total allocated memory: 130933 GB
+Allocated 130934 blocks, Total allocated memory: 130934 GB
+Failed to allocate more memory.
+Maximum memory allocated with multiple blocks of 1 GB each: 130934 GB
+
+Fra outputen ser vi at ved å reservere mange mindre blokker av minnet kan vi
+reservere ekstremt mye mer plass. Vi får totalt reservert 130934 GB som tilsvarer ca 127 TB.
+Dette er ekstremt mye mer minne enn vi faktisk har tilgjengelig på denne maskinen.
+Grunnen til at dette er mulig er at minne vi reserverer med `malloc()` blir kun
+reservert som virituelt minne. Den ekstreme mengden (127 TB) er teoretisk mulig
+fordi operativsystemet bruker "overcommit"-teknikker for minne.
+Dette betyr at systemet tillater programmer å reservere mer 
+minne enn tilgjengelig fysisk minne, men kun når det ikke blir brukt
+samtidig. Dersom programmet ditt hadde skrevet til all denne 
+tildelte plassen, ville systemet umiddelbart krasjet eller drept 
+prosessen. 
+
+For å teste hva som skjer dersom vi faktisk skriver til minne-blokkene som vi reserverer
+kjører vi funksjonen `allocateAndWrite()`. Denne funskjonen gjør akkurat det samme som
+`allocateMultipleTimes()`, bortsett fra at `allocateAndWrite()` også skriver noe til hver av
+minne-blokkene som reserveres med `malloc()`. Vi får følgende output:
+
+Allocated and wrote to 1 blocks, Total allocated memory: 1 GB
+Allocated and wrote to 2 blocks, Total allocated memory: 2 GB
+Allocated and wrote to 3 blocks, Total allocated memory: 3 GB
+Allocated and wrote to 4 blocks, Total allocated memory: 4 GB
+Allocated and wrote to 5 blocks, Total allocated memory: 5 GB
+Killed
+
+Vi aer at programmet kræsjer etter å ha allokert og skrevet til 5 blokker
+på 1GB hver. Dette sker fordi når vi skriver noe til minnet som reserveres
+tar vi det i bruk og dermed flyttes det fra det virituelle minnet til det fysiske minnet.
+Det fysiske minnet er begrenset av faktisk plass på hardware komponenter. Når vi
+da overgår begrensningene til maskinen kræsjer programmet fordi maskinen faktisk
+ikke har kapasitet til å lagre mer informasjon i minnet.
