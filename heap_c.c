@@ -22,7 +22,7 @@ void allocateOnce() {
 }
 
 void allocateMultipleTimes() {
-    size_t blockSize = 1024 * 1024 * 1024; // Fixed block size of 1GB
+    size_t blockSize = 512 * 1024 * 1024; // Fixed block size of 0.5 GB
     size_t totalAllocated = 0;
     char *block;
     int allocationCount = 0;
@@ -46,7 +46,7 @@ void allocateMultipleTimes() {
 void allocateAndWrite() {
 
 
-    size_t blockSize = 1024 * 1024 * 1024; // Fixed block size of 1GB
+    size_t blockSize = 512 * 1024 * 1024; // Fixed block size of 0.5GB
     size_t totalAllocated = 0;
     char *block;
     int allocationCount = 0;
