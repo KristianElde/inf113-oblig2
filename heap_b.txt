@@ -1,9 +1,30 @@
-
+Vi kjører programmet i `heap_b.c` og undersøker minneområdene underveis i prosessen med
+kommanoden `pmap -x $(pgrep heap_b)`. Først bruker programmet `malloc()` for å
+reservere 4MB minne uten å skrive noe til det. Programmet pauses i vente på
+input, slik at vi får mulighet til å se på minneområdet. Kjører kommanoden
+`pmap -x $(pgrep heap_b)` og får følgende output: 
 
 Address           Kbytes     RSS   Dirty Mode  Mapping
+...
 00007dfc60a00000    4100       4       4 rw---   [ anon ]
+...
+
+Gjenkjenner denne linjen som minneområdet vi er interessert i både pga minneadresse,
+og fordi størrelsen matcher med hvor mye vi reserverte med `malloc`. Ser at kun 1 page
+på 4 KB er flyttet til det fysiske minnet. Kjører programmet videre og bruker igjen
+`pmap -x $(pgrep heap_b)` for å se på minnet etter at vi har skrevet til hver page.
+Får denne outputen:
 
 Address           Kbytes     RSS   Dirty Mode  Mapping
+...
 00007dfc60a00000    4100    4096    4096 rw---   [ anon ]
+...
 
+Vi ser at nå som vi har tatt i bruk hele minneområdet er 4096 KB flyttet til det fysiske minnet (RSS).
 
+Når vi kaller `malloc()` for å allokere et minneområde, ser vi ofte at én 
+page (4 KB) vises i RSS umiddelbart, selv før vi skriver til minneområdet.
+Dette skjer fordi operativsystemet allokerer en første page i RSS for å
+holde metadata som er nødvendig for å administrere det allokerte minneområdet.
+Denne metadata-siden brukes til å spore størrelsen på og detaljer om minneblokken,
+selv om selve brukerminnet ennå ikke er i fysisk RAM.

@@ -10,7 +10,7 @@ void main() {
     char *heap_array = (char *)malloc(size);
    
 
-    printf("Allocated 10 MB at %p\n", heap_array);
+    printf("Allocated 4 MB at %p\n", heap_array);
     getchar();  // Pause to check memory without accessing it
 
     // Write to each page to bring it into physical memory
